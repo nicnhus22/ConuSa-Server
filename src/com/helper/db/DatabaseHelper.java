@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import org.json.simple.JSONObject;
 
 import com.entities.application.Application;
+import com.helper.string.Parser;
 
 public class DatabaseHelper {
 
@@ -19,6 +20,7 @@ public class DatabaseHelper {
 		PreparedStatement stmt = null; 
 		ResultSet rs = null;
 		JSONObject reviews = new JSONObject();
+		Parser parser = new Parser();
 		try {
 			db = Database.getDatabase();
 			String query = "SELECT reviewText FROM ApplicationReview WHERE appName=? AND reviewRating=?";
@@ -39,9 +41,14 @@ public class DatabaseHelper {
 			while(rs.next()){
 			     //Retrieve by column name
 				 String review  = rs.getString("reviewText");
+				 
+				 parser.parseSentence(parser, review);
+				 
 				 reviews.put("review"+i, review);
 				 i++;
 			}
+			parser.sortByOccurences();
+			parser.printMap();
 			rs.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
