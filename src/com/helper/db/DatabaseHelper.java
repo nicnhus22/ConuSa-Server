@@ -1,0 +1,155 @@
+package com.helper.db;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.json.simple.JSONObject;
+
+import com.entities.application.Application;
+
+public class DatabaseHelper {
+
+	
+	public static JSONObject fetchReviews(String appName, String rating){ 
+		
+		// Get connection to DB
+		Connection db = null;
+		PreparedStatement stmt = null; 
+		ResultSet rs = null;
+		JSONObject reviews = new JSONObject();
+		try {
+			db = Database.getDatabase();
+			String query = "SELECT reviewText FROM ApplicationReview WHERE appName=? AND reviewRating=?";
+			stmt = db.prepareStatement(query);
+			
+			System.out.println("Database ready");
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			System.out.println("LOG - Can't connect to database");
+		}
+		
+		try {
+			stmt.setString(1, appName);
+			stmt.setInt(2, Integer.parseInt(rating));
+			
+			rs = stmt.executeQuery();
+			int i=0;
+			while(rs.next()){
+			     //Retrieve by column name
+				 String review  = rs.getString("reviewText");
+				 reviews.put("review"+i, review);
+				 i++;
+			}
+			rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		
+		
+		return reviews;
+		
+	}
+	
+	public static JSONObject fetchApplications(String appName, Boolean fetchAll){
+		// Get connection to DB
+		Connection db = null;
+		PreparedStatement stmt = null; 
+		ResultSet rs = null;
+		JSONObject apps = new JSONObject();
+		try {
+			db = Database.getDatabase();
+			
+			if(!fetchAll.booleanValue()){
+				String query = "SELECT * FROM Application WHERE appName=?";
+				stmt = db.prepareStatement(query);
+				stmt.setString(1, appName);
+				System.out.println("not all");
+			} else {
+				String query = "SELECT * FROM Application";
+				stmt = db.prepareStatement(query);
+			}
+			
+			System.out.println("Database ready");
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			System.out.println("LOG - Can't connect to database");
+		}
+		
+		try {
+			
+			rs = stmt.executeQuery();		
+			
+			while(rs.next()){
+			     //Retrieve by column name
+				 String name  		= rs.getString("appName");
+				 Float rating  		= rs.getFloat("appRating");
+				 Float price  		= rs.getFloat("appPrice");
+				 String icon  		= rs.getString("appIcon");
+				 Integer five  		= rs.getInt("appRateFive");
+				 Integer four  		= rs.getInt("appRateFour");
+				 Integer three  	= rs.getInt("appRateThree");
+				 Integer two  		= rs.getInt("appRateTwo");
+				 Integer one  		= rs.getInt("appRateOne");
+				 Integer reviewCtn  = rs.getInt("appReviewCnt");
+				 
+				 JSONObject app = new JSONObject();
+				 app.put("name", name);
+				 app.put("rating", rating);
+				 app.put("price", price);
+				 app.put("icon", icon);
+				 app.put("five", five);
+				 app.put("four", four);
+				 app.put("three", three);
+				 app.put("two", two);
+				 app.put("one", one);
+				 app.put("reviewCtn", reviewCtn);
+				 
+				 apps.put(name, app);				 
+			}
+			rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		
+		
+		return apps;
+	}
+	
+	public static void insertApplicationInfo(Application app){
+		// Get connection to DB
+		Connection db = null;
+		PreparedStatement stmt = null; 
+		try {
+			db = Database.getDatabase();
+			String query = "INSERT INTO Application VALUES(?,?,?,?,?,?,?,?,?,?)";
+			stmt = db.prepareStatement(query);
+			
+			System.out.println("Database ready");
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			System.out.println("LOG - Can't connect to database");
+		}
+		
+		try {
+			stmt.setString(1, app.getAppName());
+			stmt.setFloat(2, Float.parseFloat(app.getAppRating().replace(",", "")));
+			stmt.setFloat(3, Float.parseFloat(app.getAppPrice().replace(",", "")));
+			stmt.setString(4, app.getAppIcon());
+			stmt.setInt(5, Integer.parseInt(app.getAppRateFive().replace(",", "")));
+			stmt.setInt(6, Integer.parseInt(app.getAppRateFour().replace(",", "")));
+			stmt.setInt(7, Integer.parseInt(app.getAppRateThree().replace(",", "")));
+			stmt.setInt(8, Integer.parseInt(app.getAppRateTwo().replace(",", "")));
+			stmt.setInt(9, Integer.parseInt(app.getAppRateOne().replace(",", "")));
+			stmt.setInt(10, Integer.parseInt(app.getAppReviewCnt().replace(",", "")));
+			
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+	}
+}
