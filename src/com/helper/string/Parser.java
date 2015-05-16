@@ -1,12 +1,18 @@
 package com.helper.string;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import com.entities.WordOccurence;
 import com.helper.constants.StopWords;
 
 public class Parser {
+	
+	private static int minOccurence = 10;
 
 	private Map<String, Integer> occurenceMap;
 	
@@ -15,16 +21,7 @@ public class Parser {
 	}
 	
 	public static String prepareString(String input){
-		return input.replace(".", " ")
-					.replace("?", " ")
-					.replace("!", " ")
-					.replace(",", " ")
-					.replace("(", " ")
-					.replace(")", " ")
-					.replace("-", " ")
-					.replace("/", " ")
-					.replace("\\", " ")
-					.toLowerCase();
+		return input.replaceAll("[^A-Za-z']+", " ").replace("Full", "").replace("Review", "").toLowerCase();
 	}
 	
 	public void addToOccurenceMap(String word){
@@ -56,29 +53,25 @@ public class Parser {
 	}
 	
 	public void sortByOccurences(){
-		occurenceMap = Sorter.sortByComparator(occurenceMap, true);
+		occurenceMap = Sorter.sortByComparator(occurenceMap, false);
 	}
 	
-	public static void main(String[] args) {
-		 
-		Parser parser = new Parser();
-		
-		String str = "This is String.        , split by StringTokenizer, string created by created by by by mkyong)((((";
-		
-		str = prepareString(str);
-		
-		StringTokenizer st = new StringTokenizer(str);
- 
-		System.out.println("---- Split by space ------");
-		while (st.hasMoreElements()) {
-			String word = (String)st.nextElement();
-			if(!(word.equals("Full") || word.equals("Review")))
-				parser.addToOccurenceMap(word);
-		}
-		
-		parser.sortByOccurences();
-		parser.printMap();
- 
+	public Map<String, Integer> getOccurenceMap(){
+		return occurenceMap;
 	}
-	
+
+	public List<WordOccurence> mapToObjectArray(Map<String, Integer> occurenceMap){
+		
+		List<WordOccurence> wordOccurence = new ArrayList<WordOccurence>();
+		
+		Iterator it = occurenceMap.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pair = (Map.Entry)it.next();
+	        if((Integer)pair.getValue() > minOccurence)
+	        	wordOccurence.add(new WordOccurence((String)pair.getKey(), (Integer)pair.getValue()));
+	        it.remove(); // avoids a ConcurrentModificationException
+	    }
+		
+		return wordOccurence;
+	}
 }

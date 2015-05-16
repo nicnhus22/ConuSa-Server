@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 import org.json.simple.JSONObject;
 
-import com.entities.application.Application;
+import com.entities.Application;
 import com.helper.string.Parser;
 
 public class DatabaseHelper {
@@ -19,7 +19,8 @@ public class DatabaseHelper {
 		Connection db = null;
 		PreparedStatement stmt = null; 
 		ResultSet rs = null;
-		JSONObject reviews = new JSONObject();
+		JSONObject reviewsOccurence = new JSONObject();
+		JSONObject reviews			= new JSONObject();
 		Parser parser = new Parser();
 		try {
 			db = Database.getDatabase();
@@ -55,8 +56,11 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}		
 		
+		// Add occurence map for reviews
+		reviewsOccurence.put("occurenceMap", parser.mapToObjectArray(parser.getOccurenceMap()));
+		reviewsOccurence.put("reviews", reviews);
 		
-		return reviews;
+		return reviewsOccurence;
 		
 	}
 	

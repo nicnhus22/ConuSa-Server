@@ -1,4 +1,4 @@
-package com.entities.application;
+package com.entities;
 
 public class Application {
 

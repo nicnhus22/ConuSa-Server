@@ -13,7 +13,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.entities.application.Application;
+import com.entities.Application;
 import com.helper.db.DatabaseHelper;
 import com.helper.json.JSONHelper;
 
