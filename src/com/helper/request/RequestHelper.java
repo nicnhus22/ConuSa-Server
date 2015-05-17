@@ -49,20 +49,20 @@ public class RequestHelper {
 		final String playRoot = "https://play.google.com/store/apps/details?id=";
 		
 		ArrayList<String> apps = new ArrayList<String>();
-//		apps.add("com.instagram.android");
-//		apps.add("com.ijinshan.kbatterydoctor_en");
-//		apps.add("com.adobe.reader");
-//		apps.add("com.bbm");
-//		apps.add("com.android.chrome");
-//		apps.add("com.cleanmaster.mguard");
-//		apps.add("com.dropbox.android");
-//		apps.add("com.facebook.katana");
-//		apps.add("org.mozilla.firefox");
-//		apps.add("com.shazam.android");
-//		apps.add("com.skype.raider");
-//		apps.add("com.snapchat.android");
-//		apps.add("com.spotify.music");
-//		apps.add("com.viber.voip");
+		apps.add("com.instagram.android");
+		apps.add("com.ijinshan.kbatterydoctor_en");
+		apps.add("com.adobe.reader");
+		apps.add("com.bbm");
+		apps.add("com.android.chrome");
+		apps.add("com.cleanmaster.mguard");
+		apps.add("com.dropbox.android");
+		apps.add("com.facebook.katana");
+		apps.add("org.mozilla.firefox");
+		apps.add("com.shazam.android");
+		apps.add("com.skype.raider");
+		apps.add("com.snapchat.android");
+		apps.add("com.spotify.music");
+		apps.add("com.viber.voip");
 		apps.add("com.soundcloud.android");
 		
 		for(String app: apps){

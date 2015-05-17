@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.json.simple.JSONObject;
 
@@ -22,7 +25,7 @@ public class DatabaseHelper {
 	 * 
 	 */
 	public static JSONObject fetchReviews(String appName, String rating){ 
-		
+
 		// Get connection to DB
 		Connection db = null;
 		PreparedStatement stmt = null; 
@@ -34,28 +37,28 @@ public class DatabaseHelper {
 			db = Database.getDatabase();
 			String query = "SELECT reviewText FROM ApplicationReview WHERE appName=? AND reviewRating=?";
 			stmt = db.prepareStatement(query);
-			
+
 			System.out.println("Database ready");
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 			System.out.println("LOG - Can't connect to database");
 		}
-		
+
 		int i=-1;
 		try {
 			stmt.setString(1, appName);
 			stmt.setInt(2, Integer.parseInt(rating));
-			
+
 			rs = stmt.executeQuery();
 			i=1;
 			while(rs.next()){
-			     //Retrieve by column name
-				 String review  = rs.getString("reviewText");
-				 
-				 parser.parseSentence(parser, review);
-				 
-				 reviews.put("review"+i, review);
-				 i++;
+				//Retrieve by column name
+				String review  = rs.getString("reviewText");
+
+				parser.parseSentence(parser, review);
+
+				reviews.put("review"+i, review);
+				i++;
 			}
 			parser.sortByOccurences();
 			parser.printMap();
@@ -64,16 +67,16 @@ public class DatabaseHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
-		
+
 		// Add occurence map for reviews
 		reviewsOccurence.put("occurenceMap", parser.mapToObjectArray(parser.getOccurenceMap()));
 		reviewsOccurence.put("reviews", reviews);
 		reviewsOccurence.put("reviewCount", i);
-		
+
 		return reviewsOccurence;
-		
+
 	}
-	
+
 	/**
 	 * 
 	 * @param appName
@@ -92,7 +95,7 @@ public class DatabaseHelper {
 		JSONObject apps = new JSONObject();
 		try {
 			db = Database.getDatabase();
-			
+
 			if(!fetchAll.booleanValue()){
 				String query = "SELECT * FROM Application WHERE appName=?";
 				stmt = db.prepareStatement(query);
@@ -102,54 +105,54 @@ public class DatabaseHelper {
 				String query = "SELECT * FROM Application";
 				stmt = db.prepareStatement(query);
 			}
-			
+
 			System.out.println("Database ready");
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 			System.out.println("LOG - Can't connect to database");
 		}
-		
+
 		try {
-			
+
 			rs = stmt.executeQuery();		
-			
+
 			while(rs.next()){
-			     //Retrieve by column name
-				 String name  		= rs.getString("appName");
-				 Float rating  		= rs.getFloat("appRating");
-				 Float price  		= rs.getFloat("appPrice");
-				 String icon  		= rs.getString("appIcon");
-				 Integer five  		= rs.getInt("appRateFive");
-				 Integer four  		= rs.getInt("appRateFour");
-				 Integer three  	= rs.getInt("appRateThree");
-				 Integer two  		= rs.getInt("appRateTwo");
-				 Integer one  		= rs.getInt("appRateOne");
-				 Integer reviewCtn  = rs.getInt("appReviewCnt");
-				 
-				 JSONObject app = new JSONObject();
-				 app.put("name", name);
-				 app.put("rating", rating);
-				 app.put("price", price);
-				 app.put("icon", icon);
-				 app.put("five", five);
-				 app.put("four", four);
-				 app.put("three", three);
-				 app.put("two", two);
-				 app.put("one", one);
-				 app.put("reviewCtn", reviewCtn);
-				 
-				 apps.put(name, app);				 
+				//Retrieve by column name
+				String name  		= rs.getString("appName");
+				Float rating  		= rs.getFloat("appRating");
+				Float price  		= rs.getFloat("appPrice");
+				String icon  		= rs.getString("appIcon");
+				Integer five  		= rs.getInt("appRateFive");
+				Integer four  		= rs.getInt("appRateFour");
+				Integer three  	= rs.getInt("appRateThree");
+				Integer two  		= rs.getInt("appRateTwo");
+				Integer one  		= rs.getInt("appRateOne");
+				Integer reviewCtn  = rs.getInt("appReviewCnt");
+
+				JSONObject app = new JSONObject();
+				app.put("name", name);
+				app.put("rating", rating);
+				app.put("price", price);
+				app.put("icon", icon);
+				app.put("five", five);
+				app.put("four", four);
+				app.put("three", three);
+				app.put("two", two);
+				app.put("one", one);
+				app.put("reviewCtn", reviewCtn);
+
+				apps.put(name, app);				 
 			}
 			rs.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
-		
-		
+
+
 		return apps;
 	}
-	
+
 	/**
 	 * @param app
 	 * 
@@ -163,13 +166,13 @@ public class DatabaseHelper {
 			db = Database.getDatabase();
 			String query = "INSERT INTO Application VALUES(?,?,?,?,?,?,?,?,?,?)";
 			stmt = db.prepareStatement(query);
-			
+
 			System.out.println("Database ready");
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 			System.out.println("LOG - Can't connect to database");
 		}
-		
+
 		try {
 			stmt.setString(1, app.getAppName());
 			stmt.setFloat(2, Float.parseFloat(app.getAppRating().replace(",", "")));
@@ -181,7 +184,7 @@ public class DatabaseHelper {
 			stmt.setInt(8, Integer.parseInt(app.getAppRateTwo().replace(",", "")));
 			stmt.setInt(9, Integer.parseInt(app.getAppRateOne().replace(",", "")));
 			stmt.setInt(10, Integer.parseInt(app.getAppReviewCnt().replace(",", "")));
-			
+
 			stmt.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -189,5 +192,58 @@ public class DatabaseHelper {
 		}		
 	}
 
-	
+	public static void insertWordProbabilities(List<Map<String, Integer>> wordMap){
+
+		// Get connection to DB
+		Connection db = null;
+		PreparedStatement stmt = null; 
+
+		for(int rating=0; rating<wordMap.size();++rating){
+			try {
+				db = Database.getDatabase();
+				String query = "";
+				
+				if(rating==0)
+					query = "INSERT INTO ProbabilitiesOne VALUES(?,?)";
+				if(rating==1)
+					query = "INSERT INTO ProbabilitiesTwo VALUES(?,?)";
+				if(rating==2)
+					query = "INSERT INTO ProbabilitiesThree VALUES(?,?)";
+				if(rating==3)
+					query = "INSERT INTO ProbabilitiesFour VALUES(?,?)";
+				if(rating==4)
+					query = "INSERT INTO ProbabilitiesFive VALUES(?,?)";
+					
+				System.out.println(query);
+				stmt = db.prepareStatement(query);
+
+				System.out.println("Database ready");
+			} catch (ClassNotFoundException | SQLException e) {
+				e.printStackTrace();
+				System.out.println("LOG - Can't connect to database");
+			}
+
+			try {
+				Map<String, Integer> map = wordMap.get(rating);
+				for (Entry<String, Integer> entry : map.entrySet()) {
+				    String key = entry.getKey();
+				    Object value = entry.getValue();
+				    
+				    // Compute Probability
+				    float wordMapSize 	= map.size();
+				    float wordOccurence 	= (int)value;
+				    float probability	= wordOccurence/wordMapSize;
+				    
+				    stmt.setString(1, key);
+					stmt.setFloat(2, probability);
+					
+					stmt.executeUpdate();
+					System.out.println("[DEBUG] - Adding into rating "+rating+" ("+key+","+probability+")");
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		
+		}
+	}
 }

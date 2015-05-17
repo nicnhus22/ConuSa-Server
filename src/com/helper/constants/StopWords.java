@@ -62,7 +62,7 @@ public class StopWords {
 		//stopWords.put("hadn't",1);
 		//stopWords.put("has",1);
 		//stopWords.put("hasn't",1);
-		//stopWords.put("have",1);
+		stopWords.put("have",1);
 		//stopWords.put("haven't",1);
 		stopWords.put("having",1);
 		stopWords.put("he",1);
