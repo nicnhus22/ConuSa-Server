@@ -12,7 +12,15 @@ import com.helper.string.Parser;
 
 public class DatabaseHelper {
 
-	
+	/**
+	 * 
+	 * @param appName
+	 * @param rating
+	 * @return JSONObject
+	 * 
+	 * Gets all the reviews for a specific application and rating.
+	 * 
+	 */
 	public static JSONObject fetchReviews(String appName, String rating){ 
 		
 		// Get connection to DB
@@ -33,12 +41,13 @@ public class DatabaseHelper {
 			System.out.println("LOG - Can't connect to database");
 		}
 		
+		int i=-1;
 		try {
 			stmt.setString(1, appName);
 			stmt.setInt(2, Integer.parseInt(rating));
 			
 			rs = stmt.executeQuery();
-			int i=0;
+			i=1;
 			while(rs.next()){
 			     //Retrieve by column name
 				 String review  = rs.getString("reviewText");
@@ -59,11 +68,22 @@ public class DatabaseHelper {
 		// Add occurence map for reviews
 		reviewsOccurence.put("occurenceMap", parser.mapToObjectArray(parser.getOccurenceMap()));
 		reviewsOccurence.put("reviews", reviews);
+		reviewsOccurence.put("reviewCount", i);
 		
 		return reviewsOccurence;
 		
 	}
 	
+	/**
+	 * 
+	 * @param appName
+	 * @param fetchAll
+	 * @return JSONObject
+	 * 
+	 * Gets all the application if fetchAll is True. 
+	 * Gets a single application info if fetchAll is False.
+	 * 
+	 */
 	public static JSONObject fetchApplications(String appName, Boolean fetchAll){
 		// Get connection to DB
 		Connection db = null;
@@ -130,6 +150,11 @@ public class DatabaseHelper {
 		return apps;
 	}
 	
+	/**
+	 * @param app
+	 * 
+	 * Insert all the applications' information
+	 */
 	public static void insertApplicationInfo(Application app){
 		// Get connection to DB
 		Connection db = null;
@@ -163,4 +188,6 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}		
 	}
+
+	
 }
