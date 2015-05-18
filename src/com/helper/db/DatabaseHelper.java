@@ -177,15 +177,15 @@ public class DatabaseHelper {
 			if(rating == 0)
 				query = "SELECT * FROM ProbabilitiesAll ORDER BY probability DESC LIMIT "+limit;
 			if(rating == 1)
-				query = "SELECT * FROM ProbabilitiesAll ORDER BY probability DESC LIMIT "+limit;
+				query = "SELECT * FROM ProbabilitiesOne ORDER BY probability DESC LIMIT "+limit;
 			if(rating == 2)
-				query = "SELECT * FROM ProbabilitiesAll ORDER BY probability DESC LIMIT "+limit;
+				query = "SELECT * FROM ProbabilitiesTwo ORDER BY probability DESC LIMIT "+limit;
 			if(rating == 3)
-				query = "SELECT * FROM ProbabilitiesAll ORDER BY probability DESC LIMIT "+limit;
+				query = "SELECT * FROM ProbabilitiesThree ORDER BY probability DESC LIMIT "+limit;
 			if(rating == 4)
-				query = "SELECT * FROM ProbabilitiesAll ORDER BY probability DESC LIMIT "+limit;
+				query = "SELECT * FROM ProbabilitiesFour ORDER BY probability DESC LIMIT "+limit;
 			if(rating == 5)
-				query = "SELECT * FROM ProbabilitiesAll ORDER BY probability DESC LIMIT "+limit;
+				query = "SELECT * FROM ProbabilitiesFive ORDER BY probability DESC LIMIT "+limit;
 			
 			
 			stmt = db.prepareStatement(query);
@@ -301,7 +301,13 @@ public class DatabaseHelper {
 					stmt.setString(1, key);
 					stmt.setFloat(2, probability);
 
-					stmt.executeUpdate();
+					try{
+						stmt.executeUpdate();
+					}catch(Exception e){
+						System.out.println("continuing");
+						e.printStackTrace();
+					}
+					
 					System.out.println("[DEBUG] - Adding into rating "+rating+" ("+key+","+probability+")");
 				}
 			} catch (SQLException e) {

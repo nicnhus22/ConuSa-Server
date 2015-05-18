@@ -17,13 +17,13 @@ public class Scrapper {
 
 	public static void main(String[] args) {
 
-		//List<String> apps = Scrapper.getAllApplications();
-		//List<Map<String, Integer>> wordProbabilityPerRating = Scrapper.buildProbabilityMap();
+		List<String> apps = Scrapper.getAllApplications();
+		List<Map<String, Integer>> wordProbabilityPerRating = Scrapper.buildProbabilityMap();
 		
-		//DatabaseHelper.insertWordProbabilities(wordProbabilityPerRating);
+		DatabaseHelper.insertWordProbabilities(wordProbabilityPerRating);
 		
-		Map<String, Integer> wordProbabilityAll = Scrapper.buildProbabilityMapAll();
-		DatabaseHelper.insertWordProbabilitiesAll(wordProbabilityAll);
+		//Map<String, Integer> wordProbabilityAll = Scrapper.buildProbabilityMapAll();
+		//DatabaseHelper.insertWordProbabilitiesAll(wordProbabilityAll);
 	}
 
 	public static List<String> getAllApplications(){
@@ -72,18 +72,18 @@ public class Scrapper {
 		Connection db = null;
 		PreparedStatement stmt = null; 
 		ResultSet rs = null;
-		Parser parser = new Parser();
 		
-		for(int rating=1; rating<6; ++rating){
+		for(int rating=1; rating<2; ++rating){
+			Parser parser = new Parser();
 			try {
 				db = Database.getDatabase();
 	
-				String query = "SELECT reviewText FROM ApplicationReview";
+				String query = "SELECT reviewText FROM ApplicationReview WHERE reviewRating = ?";
 				stmt = db.prepareStatement(query);
 				stmt.setInt(1, rating);
 	
 			} catch (ClassNotFoundException | SQLException e) {
-				e.printStackTrace();
+				e.printStackTrace();//Retrieve by column name
 				System.out.println("LOG - Can't connect to database");
 			}
 	
@@ -92,7 +92,7 @@ public class Scrapper {
 				rs = stmt.executeQuery();		
 	
 				while(rs.next()){
-					//Retrieve by column name
+					// Retrieve by column name
 					String review  = rs.getString("reviewText");
 					parser.parseSentence(parser, review);
 				}
@@ -102,10 +102,9 @@ public class Scrapper {
 				e.printStackTrace();
 			}	
 			
-			parser.sortByOccurences();
+			// parser.sortByOccurences();
 			wordProbabilityPerRating.add(parser.getOccurenceMap());
 		}
-
 
 		return wordProbabilityPerRating;
 	}
