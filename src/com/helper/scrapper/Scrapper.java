@@ -17,10 +17,13 @@ public class Scrapper {
 
 	public static void main(String[] args) {
 
-		List<String> apps = Scrapper.getAllApplications();
-		List<Map<String, Integer>> wordProbabilityPerRating = Scrapper.buildProbabilityMap();
+		//List<String> apps = Scrapper.getAllApplications();
+		//List<Map<String, Integer>> wordProbabilityPerRating = Scrapper.buildProbabilityMap();
 		
-		DatabaseHelper.insertWordProbabilities(wordProbabilityPerRating);
+		//DatabaseHelper.insertWordProbabilities(wordProbabilityPerRating);
+		
+		Map<String, Integer> wordProbabilityAll = Scrapper.buildProbabilityMapAll();
+		DatabaseHelper.insertWordProbabilitiesAll(wordProbabilityAll);
 	}
 
 	public static List<String> getAllApplications(){
@@ -30,6 +33,7 @@ public class Scrapper {
 		Connection db = null;
 		PreparedStatement stmt = null; 
 		ResultSet rs = null;
+		
 		try {
 			db = Database.getDatabase();
 
@@ -74,7 +78,7 @@ public class Scrapper {
 			try {
 				db = Database.getDatabase();
 	
-				String query = "SELECT reviewText FROM ApplicationReview WHERE reviewRating=?";
+				String query = "SELECT reviewText FROM ApplicationReview";
 				stmt = db.prepareStatement(query);
 				stmt.setInt(1, rating);
 	
@@ -105,4 +109,45 @@ public class Scrapper {
 
 		return wordProbabilityPerRating;
 	}
+
+	public static Map<String, Integer> buildProbabilityMapAll(){
+
+		// Get connection to DB
+		Connection db = null;
+		PreparedStatement stmt = null; 
+		ResultSet rs = null;
+		Parser parser = new Parser();
+		
+			try {
+				db = Database.getDatabase();
+	
+				String query = "SELECT reviewText FROM ApplicationReview";
+				stmt = db.prepareStatement(query);
+
+			} catch (ClassNotFoundException | SQLException e) {
+				e.printStackTrace();
+				System.out.println("LOG - Can't connect to database");
+			}
+	
+			try {
+	
+				rs = stmt.executeQuery();		
+				
+				while(rs.next()){
+					//Retrieve by column name
+					String review  = rs.getString("reviewText");
+					parser.parseSentence(parser, review);
+				}
+				rs.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+			
+			parser.sortByOccurences();
+
+
+		return parser.getOccurenceMap();
+	}
+
 }

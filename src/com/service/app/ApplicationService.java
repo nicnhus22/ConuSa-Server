@@ -1,5 +1,7 @@
 package com.service.app;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -13,6 +15,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.json.simple.JSONObject;
 
+import com.entities.WordProbability;
 import com.helper.db.DatabaseHelper;
 import com.helper.request.RequestHelper;
 
@@ -40,5 +43,17 @@ public class ApplicationService {
 		
 		return DatabaseHelper.fetchApplications(appName,fetchAll);
 	}
+	
+	@GET
+	@Path("/probability")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<WordProbability> fetchProbabilities(
+			@QueryParam("rating") int rating, 
+			@QueryParam("limit") int limit, 
+			@Context UriInfo uriInfo, String content){
+		
+		return DatabaseHelper.fetchProbabilities(rating,limit);
+	}
+	
 	
 }

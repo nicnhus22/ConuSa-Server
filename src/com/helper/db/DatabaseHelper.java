@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,6 +12,7 @@ import java.util.Map.Entry;
 import org.json.simple.JSONObject;
 
 import com.entities.Application;
+import com.entities.WordProbability;
 import com.helper.string.Parser;
 
 public class DatabaseHelper {
@@ -154,6 +156,68 @@ public class DatabaseHelper {
 	}
 
 	/**
+	 * 
+	 * @param rating
+	 * @param limit
+	 * @return JSONObject
+	 * 
+	 * Gets the probabilities for a specific
+	 * 
+	 */
+	public static List<WordProbability> fetchProbabilities(int rating, int limit) {
+		// Get connection to DB
+		Connection db = null;
+		PreparedStatement stmt = null; 
+		ResultSet rs = null;
+		List<WordProbability> probas = new ArrayList<WordProbability>();
+		try {
+			db = Database.getDatabase();
+			String query = "";
+			
+			if(rating == 0)
+				query = "SELECT * FROM ProbabilitiesAll ORDER BY probability DESC LIMIT "+limit;
+			if(rating == 1)
+				query = "SELECT * FROM ProbabilitiesAll ORDER BY probability DESC LIMIT "+limit;
+			if(rating == 2)
+				query = "SELECT * FROM ProbabilitiesAll ORDER BY probability DESC LIMIT "+limit;
+			if(rating == 3)
+				query = "SELECT * FROM ProbabilitiesAll ORDER BY probability DESC LIMIT "+limit;
+			if(rating == 4)
+				query = "SELECT * FROM ProbabilitiesAll ORDER BY probability DESC LIMIT "+limit;
+			if(rating == 5)
+				query = "SELECT * FROM ProbabilitiesAll ORDER BY probability DESC LIMIT "+limit;
+			
+			
+			stmt = db.prepareStatement(query);
+
+			System.out.println("Database ready");
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			System.out.println("LOG - Can't connect to database");
+		}
+
+		try {
+
+			rs = stmt.executeQuery();		
+			int i=1;
+			while(rs.next()){
+				JSONObject proba = new JSONObject();
+				String word  		= rs.getString("word");
+				float  probability  = rs.getFloat("probability");
+				
+				probas.add(new WordProbability(word, probability));			 
+			}
+			
+			rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		
+		return probas;
+	}
+
+	/**
 	 * @param app
 	 * 
 	 * Insert all the applications' information
@@ -202,7 +266,7 @@ public class DatabaseHelper {
 			try {
 				db = Database.getDatabase();
 				String query = "";
-				
+
 				if(rating==0)
 					query = "INSERT INTO ProbabilitiesOne VALUES(?,?)";
 				if(rating==1)
@@ -213,7 +277,7 @@ public class DatabaseHelper {
 					query = "INSERT INTO ProbabilitiesFour VALUES(?,?)";
 				if(rating==4)
 					query = "INSERT INTO ProbabilitiesFive VALUES(?,?)";
-					
+
 				System.out.println(query);
 				stmt = db.prepareStatement(query);
 
@@ -226,17 +290,17 @@ public class DatabaseHelper {
 			try {
 				Map<String, Integer> map = wordMap.get(rating);
 				for (Entry<String, Integer> entry : map.entrySet()) {
-				    String key = entry.getKey();
-				    Object value = entry.getValue();
-				    
-				    // Compute Probability
-				    float wordMapSize 	= map.size();
-				    float wordOccurence 	= (int)value;
-				    float probability	= wordOccurence/wordMapSize;
-				    
-				    stmt.setString(1, key);
+					String key = entry.getKey();
+					Object value = entry.getValue();
+
+					// Compute Probability
+					float wordMapSize 	= map.size();
+					float wordOccurence 	= (int)value;
+					float probability	= wordOccurence/wordMapSize;
+
+					stmt.setString(1, key);
 					stmt.setFloat(2, probability);
-					
+
 					stmt.executeUpdate();
 					System.out.println("[DEBUG] - Adding into rating "+rating+" ("+key+","+probability+")");
 				}
@@ -246,4 +310,46 @@ public class DatabaseHelper {
 			}		
 		}
 	}
+
+	public static void insertWordProbabilitiesAll(Map<String, Integer> wordMap){
+		// Get connection to DB
+		Connection db = null;
+		PreparedStatement stmt = null; 
+
+		try {
+			db = Database.getDatabase();
+			String query = "INSERT INTO ProbabilitiesAll VALUES(?,?)";
+
+			System.out.println(query);
+			stmt = db.prepareStatement(query);
+
+			System.out.println("Database ready");
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			System.out.println("LOG - Can't connect to database");
+		}
+
+		try {
+			for (Entry<String, Integer> entry : wordMap.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
+
+				// Compute Probability
+				float wordMapSize 	= wordMap.size();
+				float wordOccurence = (int)value;
+				float probability	= wordOccurence/wordMapSize;
+
+				stmt.setString(1, key);
+				stmt.setFloat(2, probability);
+
+				stmt.executeUpdate();
+				System.out.println("[DEBUG] - Adding into all("+key+","+probability+")");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+
+	}
+
 }
