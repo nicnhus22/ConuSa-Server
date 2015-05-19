@@ -55,5 +55,13 @@ public class ApplicationService {
 		return DatabaseHelper.fetchProbabilities(rating,limit);
 	}
 	
-	
+	@GET
+	@Path("/analyze")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String analyzeReview(
+			@QueryParam("review") String review, 
+			@Context UriInfo uriInfo, String content){
+		
+		return review;
+	}
 }
