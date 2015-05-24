@@ -2,6 +2,7 @@ package com.service.app;
 
 import java.util.List;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -64,4 +65,18 @@ public class ApplicationService {
 		
 		return review;
 	}
+
+	@POST
+	@Path("/override")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String overrideReviewRating(
+			@FormParam("id") String id,
+			@FormParam("current") String current,
+			@FormParam("override") String override,
+			@Context UriInfo uriInfo, String content){
+		
+		return DatabaseHelper.addToGoldStandard(id, current, override);
+	}
+
+
 }

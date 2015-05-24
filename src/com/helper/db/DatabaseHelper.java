@@ -37,7 +37,7 @@ public class DatabaseHelper {
 		Parser parser = new Parser();
 		try {
 			db = Database.getDatabase();
-			String query = "SELECT reviewText FROM ApplicationReview WHERE appName=? AND reviewRating=?";
+			String query = "SELECT id, reviewText FROM ApplicationReview WHERE appName=? AND reviewRating=?";
 			stmt = db.prepareStatement(query);
 
 			System.out.println("Database ready");
@@ -55,10 +55,15 @@ public class DatabaseHelper {
 			i=1;
 			while(rs.next()){
 				//Retrieve by column name
-				String review  = rs.getString("reviewText");
-
-				parser.parseSentence(parser, review);
-
+				JSONObject review = new JSONObject();
+				String text  = rs.getString("reviewText");
+				String id	 = rs.getString("id");
+				
+				parser.parseSentence(parser, text);
+				
+				review.put("text", text);
+				review.put("id", id);
+				
 				reviews.put("review"+i, review);
 				i++;
 			}
@@ -356,6 +361,37 @@ public class DatabaseHelper {
 			e.printStackTrace();
 		}		
 
+	}
+
+	public static String addToGoldStandard(String id, String current,
+			String override) {
+		String result = "";
+		
+		// Get connection to DB
+		Connection db = null;
+		PreparedStatement stmt = null; 
+
+		try {
+			db = Database.getDatabase();
+			String query = "INSERT INTO GoldStandard VALUES(?,?,?)";
+
+			System.out.println(query);
+			stmt = db.prepareStatement(query);
+
+			stmt.setString(1, id);
+			stmt.setInt(2, Integer.parseInt(current));
+			stmt.setInt(3, Integer.parseInt(override));
+
+			stmt.executeUpdate();
+			System.out.println("[DEBUG] - Overriding review with ID="+id);
+			result = "Review rating updated";
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			System.out.println("LOG - Can't connect to database");
+			result = "Internal error, please retry";
+		}
+
+		return result;
 	}
 
 }
