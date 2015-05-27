@@ -75,7 +75,7 @@ public class ApplicationService {
 			@FormParam("override") String override,
 			@Context UriInfo uriInfo, String content){
 		
-		return DatabaseHelper.addToGoldStandard(id, current, override);
+		return DatabaseHelper.insertGoldStandard(id, current, override);
 	}
 
 

@@ -17,6 +17,10 @@ import com.helper.string.Parser;
 
 public class DatabaseHelper {
 
+	/*																			*				
+	 **************************** 		FETCH 		*****************************
+	 *																			*/
+
 	/**
 	 * 
 	 * @param appName
@@ -223,6 +227,59 @@ public class DatabaseHelper {
 	}
 
 	/**
+	 * @return List of JSON object
+	 */
+	public static List<JSONObject> fetchGoldStandard(){
+		
+		//	Get connection to DB
+		Connection db = null;
+		PreparedStatement stmt = null; 
+		ResultSet rs = null;
+		List<JSONObject> result = new ArrayList<JSONObject>();
+		try {
+			db = Database.getDatabase();
+			String query = "SELECT * FROM GoldStandard";
+			stmt = db.prepareStatement(query);
+
+			System.out.println("Database ready");
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			System.out.println("LOG - Can't connect to database");
+		}
+
+		try {
+
+			rs = stmt.executeQuery();		
+			while(rs.next()){
+				JSONObject temp = new JSONObject();
+				String reviewID = rs.getString("reviewID");
+				int  oldRating  = rs.getInt("oldRating");
+				int  newRating  = rs.getInt("newRating");
+				
+				temp.put("reviewID", reviewID);
+				temp.put("oldRating", oldRating);
+				temp.put("newRating", newRating);
+				
+				
+				result.add(temp);		 
+			}
+			
+			rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+				
+		
+		return result;
+	}
+	
+	
+	/*																			*				
+	 **************************** 		INSERT 		****************************
+	 *																			*/
+		
+	/**
 	 * @param app
 	 * 
 	 * Insert all the applications' information
@@ -261,6 +318,9 @@ public class DatabaseHelper {
 		}		
 	}
 
+	/**
+	 * @param wordMap
+	 */
 	public static void insertWordProbabilities(List<Map<String, Integer>> wordMap){
 
 		// Get connection to DB
@@ -322,6 +382,9 @@ public class DatabaseHelper {
 		}
 	}
 
+	/**
+	 * @param wordMap
+	 */
 	public static void insertWordProbabilitiesAll(Map<String, Integer> wordMap){
 		// Get connection to DB
 		Connection db = null;
@@ -363,7 +426,13 @@ public class DatabaseHelper {
 
 	}
 
-	public static String addToGoldStandard(String id, String current,
+	/**
+	 * @param id
+	 * @param current
+	 * @param override
+	 * @return
+	 */
+	public static String insertGoldStandard(String id, String current,
 			String override) {
 		String result = "";
 		
