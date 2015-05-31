@@ -16,6 +16,7 @@ public class StopWords {
     	stopWords = new HashMap<String, Integer>();
 
 		stopWords.put("a",1);
+		stopWords.put("app",1);
 		stopWords.put("about",1);
 		stopWords.put("above",1);
 		stopWords.put("after",1);

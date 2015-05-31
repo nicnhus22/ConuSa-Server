@@ -5,6 +5,7 @@ import java.util.List;
 import org.json.simple.JSONObject;
 
 import com.helper.db.DatabaseHelper;
+import com.helper.string.Parser;
 
 public class Driver {
 
@@ -16,26 +17,19 @@ public class Driver {
 		System.out.println(computeGoldStandardScore());
 		
 	}
-	// 50  reviews: 75%
-	// 100 reviews: 80%
-	// 150 reviews: 82%
+
 	public static float computeGoldStandardScore(){
 		
 		float result = 0;
-		List<JSONObject> list = DatabaseHelper.fetchGoldStandard();
-		int   listSize = list.size();
-		int   good=1;
+		List<String> list = DatabaseHelper.fetchGoldStandard(1);
 		
-		for(JSONObject obj: list){
-			int oldRating = (int)obj.get("oldRating");
-			int newRating = (int)obj.get("newRating");
-			
-			if((oldRating - 1) == newRating || (oldRating + 1) == newRating || oldRating == newRating){
-				good++;
-			} 
+		Parser parser = new Parser();
+		
+		for(String review: list){
+			parser.parseSentence(parser, review);			
 		}
-		
-		result = ((float)good/(float)listSize); 
+		parser.sortByOccurences();
+		System.out.println(parser.getOccurenceMap());
 		
 		return result;
 	}

@@ -74,4 +74,16 @@ public class Parser {
 		
 		return wordOccurence;
 	}
+	
+	public List<String> mapToWordList(Map<String, Integer> occurenceMap){
+		List<String> words = new ArrayList<String>();
+		
+		Iterator it = occurenceMap.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pair = (Map.Entry)it.next();
+	        words.add((String)pair.getKey());
+	    }
+		
+		return words;
+	}
 }

@@ -229,17 +229,18 @@ public class DatabaseHelper {
 	/**
 	 * @return List of JSON object
 	 */
-	public static List<JSONObject> fetchGoldStandard(){
+	public static List<String> fetchGoldStandard(int reviewRating){
 		
 		//	Get connection to DB
 		Connection db = null;
 		PreparedStatement stmt = null; 
 		ResultSet rs = null;
-		List<JSONObject> result = new ArrayList<JSONObject>();
+		List<String> result = new ArrayList<String>();
 		try {
 			db = Database.getDatabase();
-			String query = "SELECT * FROM GoldStandard";
+			String query = "SELECT reviewText FROM ApplicationReview WHERE id IN (SELECT reviewID FROM GoldStandard WHERE rating=?)";
 			stmt = db.prepareStatement(query);
+			stmt.setInt(1, reviewRating);
 
 			System.out.println("Database ready");
 		} catch (ClassNotFoundException | SQLException e) {
@@ -251,17 +252,8 @@ public class DatabaseHelper {
 
 			rs = stmt.executeQuery();		
 			while(rs.next()){
-				JSONObject temp = new JSONObject();
-				String reviewID = rs.getString("reviewID");
-				int  oldRating  = rs.getInt("oldRating");
-				int  newRating  = rs.getInt("newRating");
-				
-				temp.put("reviewID", reviewID);
-				temp.put("oldRating", oldRating);
-				temp.put("newRating", newRating);
-				
-				
-				result.add(temp);		 
+				String reviewText = rs.getString("reviewText");
+				result.add(reviewText);	 
 			}
 			
 			rs.close();
@@ -272,6 +264,63 @@ public class DatabaseHelper {
 				
 		
 		return result;
+	}
+	
+	/**
+	 * @param word
+	 * @param rating
+	 * @return the probability of a word occuring in a specific star rating
+	 */
+	public static float fetchWordProbabilityPerStar(String word, int rating){
+		// Get connection to DB
+		Connection db = null;
+		PreparedStatement stmt = null; 
+		ResultSet rs = null;
+		
+		// Result
+		float probability = -1;
+		
+		try {
+			db = Database.getDatabase();
+			String query = "";
+			
+			if(rating == 0)
+				query = "SELECT probability FROM ProbabilitiesAll WHERE word=?";
+			if(rating == 1)
+				query = "SELECT probability FROM ProbabilitiesOne WHERE word=?";
+			if(rating == 2)
+				query = "SELECT probability FROM ProbabilitiesTwo WHERE word=?";
+			if(rating == 3)
+				query = "SELECT probability FROM ProbabilitiesThree WHERE word=?";
+			if(rating == 4)
+				query = "SELECT probability FROM ProbabilitiesFour WHERE word=?";
+			if(rating == 5)
+				query = "SELECT probability FROM ProbabilitiesFive WHERE word=?";
+			
+			
+			stmt = db.prepareStatement(query);
+			stmt.setString(1, word);
+
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			System.out.println("LOG - Can't connect to database");
+		}
+
+		try {
+
+			rs = stmt.executeQuery();		
+			int i=1;
+			while(rs.next()){
+				probability  = rs.getFloat("probability");	 
+			}
+			
+			rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		
+		return probability;
 	}
 	
 	
@@ -442,14 +491,14 @@ public class DatabaseHelper {
 
 		try {
 			db = Database.getDatabase();
-			String query = "INSERT INTO GoldStandard VALUES(?,?,?)";
+			String query = "INSERT INTO GoldStandard VALUES(?,?)";
 
 			System.out.println(query);
 			stmt = db.prepareStatement(query);
 
 			stmt.setString(1, id);
-			stmt.setInt(2, Integer.parseInt(current));
-			stmt.setInt(3, Integer.parseInt(override));
+			stmt.setInt(2, Integer.parseInt(override));
+			// stmt.setInt(3, Integer.parseInt(override));
 
 			stmt.executeUpdate();
 			System.out.println("[DEBUG] - Overriding review with ID="+id);
