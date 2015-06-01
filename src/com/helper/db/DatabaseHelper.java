@@ -77,6 +77,13 @@ public class DatabaseHelper {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			try {
+				db.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}		
 
 		// Add occurence map for reviews
@@ -158,6 +165,13 @@ public class DatabaseHelper {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			try {
+				db.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}		
 
 
@@ -221,6 +235,13 @@ public class DatabaseHelper {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			try {
+				db.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}		
 		
 		return probas;
@@ -241,8 +262,6 @@ public class DatabaseHelper {
 			String query = "SELECT reviewText FROM ApplicationReview WHERE id IN (SELECT reviewID FROM GoldStandard WHERE rating=?)";
 			stmt = db.prepareStatement(query);
 			stmt.setInt(1, reviewRating);
-
-			System.out.println("Database ready");
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 			System.out.println("LOG - Can't connect to database");
@@ -260,7 +279,14 @@ public class DatabaseHelper {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
+		} finally {
+			try {
+				db.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 				
 		
 		return result;
@@ -318,11 +344,78 @@ public class DatabaseHelper {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			try {
+				db.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}		
 		
 		return probability;
 	}
-	
+
+	/**
+	 * @param rating
+	 * @return
+	 */
+	public static int fetchCountPerRating(int rating){
+		// Get connection to DB
+		Connection db = null;
+		PreparedStatement stmt = null; 
+		ResultSet rs = null;
+		
+		// Result
+		int count = 0;
+		
+		try {
+			db = Database.getDatabase();
+			String query = "";
+			
+			if(rating == 0)
+				query = "SELECT COUNT(*) AS count FROM ApplicationReview";
+			if(rating == 1)
+				query = "SELECT COUNT(*) AS count FROM ApplicationReview WHERE reviewRating=?";
+			if(rating == 2)
+				query = "SELECT COUNT(*) AS count FROM ApplicationReview WHERE reviewRating=?";
+			if(rating == 3)
+				query = "SELECT COUNT(*) AS count FROM ApplicationReview WHERE reviewRating=?";
+			if(rating == 4)
+				query = "SELECT COUNT(*) AS count FROM ApplicationReview WHERE reviewRating=?";
+			if(rating == 5)
+				query = "SELECT COUNT(*) AS count FROM ApplicationReview WHERE reviewRating=?";
+			
+			
+			stmt = db.prepareStatement(query);
+			if(rating != 0)
+				stmt.setInt(1, rating);
+
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			System.out.println("LOG - Can't connect to database");
+		}
+
+		try {
+			rs = stmt.executeQuery();		
+			while(rs.next()){
+				count  = rs.getInt("count");	 
+			}
+			rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				db.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}		
+		
+		return count;
+	}
 	
 	/*																			*				
 	 **************************** 		INSERT 		****************************
