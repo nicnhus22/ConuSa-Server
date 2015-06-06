@@ -73,7 +73,7 @@ public class Scrapper {
 		PreparedStatement stmt = null; 
 		ResultSet rs = null;
 		
-		for(int rating=1; rating<2; ++rating){
+		for(int rating=1; rating<6; ++rating){
 			Parser parser = new Parser();
 			try {
 				db = Database.getDatabase();

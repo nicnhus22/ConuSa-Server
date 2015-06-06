@@ -57,6 +57,7 @@ public class StopWords {
 		stopWords.put("each",1);
 		//stopWords.put("few",1);
 		stopWords.put("for",1);
+		stopWords.put("feel",1);
 		stopWords.put("from",1);
 		stopWords.put("further",1);
 		stopWords.put("had",1);
@@ -95,6 +96,8 @@ public class StopWords {
 		stopWords.put("its",1);
 		stopWords.put("itself",1);
 		stopWords.put("let's",1);
+		stopWords.put("makes",1);
+		stopWords.put("make",1);
 		stopWords.put("me",1);
 		stopWords.put("more",1);
 		stopWords.put("most",1);

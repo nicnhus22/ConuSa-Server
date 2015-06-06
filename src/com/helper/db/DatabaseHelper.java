@@ -20,7 +20,6 @@ public class DatabaseHelper {
 	/*																			*				
 	 **************************** 		FETCH 		*****************************
 	 *																			*/
-
 	/**
 	 * 
 	 * @param appName
