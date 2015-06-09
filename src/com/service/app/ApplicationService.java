@@ -17,6 +17,7 @@ import javax.ws.rs.core.UriInfo;
 import org.json.simple.JSONObject;
 
 import com.entities.WordProbability;
+import com.filter.naive.NaiveBayesClassification;
 import com.helper.db.DatabaseHelper;
 import com.helper.request.RequestHelper;
 
@@ -63,7 +64,10 @@ public class ApplicationService {
 			@QueryParam("review") String review, 
 			@Context UriInfo uriInfo, String content){
 		
-		return review;
+		NaiveBayesClassification nb = new NaiveBayesClassification();
+		int stars = nb.getHighestScore(review);
+		
+		return ""+stars;
 	}
 
 	@POST

@@ -22,8 +22,6 @@ public class NaiveBayesClassification {
 	
 	// 50 reviews: 90%
 	public static void main(String[] args){
-		goodWords = new GoodWords();
-		badWords  = new BadWords();
 		
 		NaiveBayesClassification classif = new NaiveBayesClassification();
 		
@@ -48,12 +46,12 @@ public class NaiveBayesClassification {
 			}
 		}
 		System.out.println((float)goodClass/((float)goldStrings1.size()+(float)goldStrings5.size()));
-		
-//		int prediction = classif.getHighestScore("Yup I love it");
-//		System.out.println(prediction);
 	}
 	
 	public float sentenceScore(String sentence, int rating){
+		goodWords = new GoodWords();
+		badWords  = new BadWords();
+		
 		float score = 0;
 		Parser parser = new Parser();
 		parser.parseSentence(parser, sentence);
